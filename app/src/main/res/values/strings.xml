@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TestApp1</string>
+    <string name="enter_the_amount">金額入力</string>
+    <string name="show_list">show list</string>
+    <string name="changeFee">0.0</string>
+
+</resources>
