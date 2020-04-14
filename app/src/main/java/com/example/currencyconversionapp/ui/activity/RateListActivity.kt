@@ -3,8 +3,11 @@ package com.example.currencyconversionapp.ui.activity
 import android.content.Context
 import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +21,6 @@ import kotlinx.android.synthetic.main.activity_rate_mian.*
 import org.json.JSONArray
 import java.util.*
 import kotlin.collections.ArrayList
-import android.os.Handler
 
 
 class RateListActivity : AppCompatActivity() {
@@ -31,10 +33,19 @@ class RateListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_rate_mian)
 
-        findViewById<Button>(R.id.baseChip).setOnClickListener {
-            findViewById<RecyclerView>(R.id.rateList).visibility = View.VISIBLE
+        findViewById<EditText>(R.id.money).setOnFocusChangeListener { v, hasFocus ->
+            when (hasFocus) {
+                true -> {}
+                false -> {
+                    val inputMethodManager: InputMethodManager =
+                        getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputMethodManager.hideSoftInputFromWindow(
+                        v.windowToken,
+                        InputMethodManager.HIDE_NOT_ALWAYS
+                    )
+                }
+            }
         }
-
         callAsynchronousTask()
 
         setRecyclerView()
@@ -77,15 +88,13 @@ class RateListActivity : AppCompatActivity() {
         jsonArray ?: return
 
         val list = ArrayList<String>()
-        if (jsonArray != null) {
-            val len = jsonArray.length()
-            for (i in 0 until len) {
-                list.add(jsonArray.get(i).toString())
-            }
+        val len = jsonArray.length()
+        for (i in 0 until len) {
+            list.add(jsonArray.get(i).toString())
         }
         rateList.adapter = RateListAdapter(this, jsonArray, object : RateListListener {
             override fun onItemClick(currencies: String) {
-                findViewById<Button>(R.id.baseChip).text = currencies
+                baseChip?.text = currencies
             }
         })
     }
