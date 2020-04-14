@@ -8,11 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.currencyconversionapp.R
 import org.json.JSONArray
+import java.text.DecimalFormat
+import kotlin.math.ceil
 
 class RateListAdapter(
     context: Context,
     private val jsonArray: JSONArray,
-    private val listener: RateListListener
+    private val money: String
+//    private val listener: RateListListener
 ) :
     RecyclerView.Adapter<RateListAdapter.ViewHolder>() {
 
@@ -33,25 +36,44 @@ class RateListAdapter(
         for (i in 0 until jsonArray.length()) {
             val data = jsonArray.getJSONObject(i)
             val currencies = data.getString("key")
-            val source = data.getString("value")
+            var source = data.getString("value")
+
+            when (source) {
+                "1.48E-4" -> source = "1.48"
+            }
+
+            val sourceDouble = source.toDouble()
+            val  df = DecimalFormat("0.00")
 
             currenciesList.add(currencies)
-            sourceList.add(source)
+            sourceList.add(df.format(sourceDouble).toString())
         }
 
         holder.currenciesView.text = currenciesList[position]
         holder.sourceView.text = sourceList[position]
 
+        when (money) {
+            "" -> {
+            }
+            else -> {
+                val amountAfterConversion = (holder.sourceView.text.toString().toDouble()
+                        * money.toInt())
+                val  df = DecimalFormat("0.00")
+                holder.changeFeeView.text = df.format(amountAfterConversion).toString()
+            }
+        }
+
+
         holder.itemView.setOnClickListener {
-            listener.onItemClick(holder.currenciesView.text.toString())
+//            listener.onItemClick(holder.currenciesView.text.toString())
         }
     }
 
     override fun getItemCount(): Int = jsonArray.length()
 
-    interface RateListListener {
-        fun onItemClick(currencies: String)
-    }
+//    interface RateListListener {
+//        fun onItemClick(currencies: String)
+//    }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val currenciesView: TextView = itemView.findViewById(R.id.currencies)

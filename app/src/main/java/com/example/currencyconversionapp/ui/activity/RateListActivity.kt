@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,7 +15,7 @@ import com.example.currencyconversionapp.common.Utils
 import com.example.currencyconversionapp.task.CurrencyTask
 import com.example.currencyconversionapp.task.RateTask
 import com.example.currencyconversionapp.ui.adapter.RateListAdapter
-import com.example.currencyconversionapp.ui.adapter.RateListAdapter.RateListListener
+//import com.example.currencyconversionapp.ui.adapter.RateListAdapter.RateListListener
 import kotlinx.android.synthetic.main.activity_rate_mian.*
 import org.json.JSONArray
 import java.util.*
@@ -35,7 +34,8 @@ class RateListActivity : AppCompatActivity() {
 
         findViewById<EditText>(R.id.money).setOnFocusChangeListener { v, hasFocus ->
             when (hasFocus) {
-                true -> {}
+                true -> {
+                }
                 false -> {
                     val inputMethodManager: InputMethodManager =
                         getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -43,6 +43,8 @@ class RateListActivity : AppCompatActivity() {
                         v.windowToken,
                         InputMethodManager.HIDE_NOT_ALWAYS
                     )
+
+                    setRateListAdapter(money?.text.toString())
                 }
             }
         }
@@ -72,10 +74,10 @@ class RateListActivity : AppCompatActivity() {
         })
         recyclerView.bringToFront()
 
-        setRateListAdapter()
+        setRateListAdapter("")
     }
 
-    private fun setRateListAdapter() {
+    private fun setRateListAdapter(money: String) {
 
         var jsonArray: JSONArray? = null
         val data = getSharedPreferences("dataPreference", Context.MODE_PRIVATE)
@@ -92,11 +94,14 @@ class RateListActivity : AppCompatActivity() {
         for (i in 0 until len) {
             list.add(jsonArray.get(i).toString())
         }
-        rateList.adapter = RateListAdapter(this, jsonArray, object : RateListListener {
-            override fun onItemClick(currencies: String) {
-                baseChip?.text = currencies
-            }
-        })
+
+        rateList?.adapter = RateListAdapter(this, jsonArray, money)
+//        , object : RateListListener {
+//            override fun onItemClick(currencies: String) {
+////                baseChip?.text = currencies
+//
+//            }
+//        })
     }
 
     private fun callAsynchronousTask() {
