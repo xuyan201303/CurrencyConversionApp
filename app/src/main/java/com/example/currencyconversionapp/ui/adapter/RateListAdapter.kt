@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.currencyconversionapp.R
 import org.json.JSONArray
 import java.text.DecimalFormat
-import kotlin.math.ceil
 
 class RateListAdapter(
     context: Context,
